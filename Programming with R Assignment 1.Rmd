@@ -1,0 +1,300 @@
+---
+title: 'Tika_Valon'
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+# DO NOT ADD OR REVISE CODE HERE
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+####  Please delete the Instructions and Examples shown above prior to submitting your .Rmd and .html files.
+
+-----
+
+### Test Items
+
+Read each question carefully and address each element.  Do not print contents of vectors or data frames unless requested.
+
+##### (1) (4 points) This problem deals with vector manipulations.
+
+(1)(a)  Create a vector that contains the following, in this order, and print the contents.  Do not round off any values unless requested.
+* A sequence of integers from 0 to 5, inclusive.
+* The number 6
+* Two repetitions of the vector c(2, -5.1, -23).
+* The sum of 7/42 and 3
+
+```{r test1a, eval = TRUE, echo = TRUE}
+ ##Creeate a sequence of integers from 0 to 5 inclusive.
+aa <- seq(0,5,by=1)
+print(aa)
+ ##Create the number 6.
+ab <- 6
+print(ab)
+ ##Two repitions of the vector c(2, -5.1, -23).
+ac <- rep(c(2, -5.1, -23), times = 2)
+print(ac)
+ ##The sum of 7/42 and 3.
+library(MASS)
+ad <- fractions((7/42) + 3)
+print(ad)
+ ##Now to create the vector
+one_A <- c(aa,ab,ac,ad)
+
+```
+
+(1)(b)  Sort the vector created in (1)(a) in ascending order.  Print this result.  Determine the length of the resulting vector and denote as L. Print L. Generate a sequence starting with 1 and ending with L and add to the sorted vector. This is vector addition, not vector combination.  Print the contents.  Do not round off any values.
+
+```{r test1b, eval = TRUE, echo = TRUE}
+ ##first, sort the vector in ascending order
+one_A <- sort(one_A, decreasing = FALSE)
+print(one_A)
+
+ ##find length of vector
+L <- length(one_A)
+print(L)
+ ##Generate sequence from 1 to L first before I add it to the sorted vector
+seq_L <- seq.int(from = 1, to = L, by = 1)
+ ##Do some vector addition!! I am not sure if this is a trick question, but since they are both the same length, i can just do an addition of the two vectors. assuming that this wants vector addition, not combination.
+one_A_add <- one_A + seq_L
+print(one_A_add)
+
+```
+
+(1)(c) Extract the first and last elements of the vector you have created in (1)(b) to form another vector using the extracted elements. Form a third vector from the elements not extracted. Print these vectors.
+
+```{r test1c, eval = TRUE, echo = TRUE}
+## Extract the first and last elements of the vector and create a new vector. 
+one_HT <- c(head(one_A_add,1),tail(one_A_add,1))
+print(one_HT)
+
+##create a vector without the first and last value. I will first remove the last value then the first value
+one_N_H <- head(one_A_add, -1)
+one_N_HT <- tail(one_N_H, -1)
+print(one_N_HT)
+
+```
+
+(1)(d) Use the vectors from (c) to reconstruct the vector in (b). Print this vector. Sum the elements and round to two decimal places.
+
+```{r test1d, eval = TRUE, echo = TRUE}
+##reconstruct vector from 1b using two vectors from 1c
+one_A_add_reconst <- sort(append(one_HT, one_N_HT), decreasing = FALSE)
+
+print(one_A_add_reconst)
+
+sum_one_A_add_reconst <- round(sum(one_A_add_reconst), digits = 2)
+
+print(sum_one_A_add_reconst)
+
+```
+
+-----
+
+##### (2) (5 points) The expression y = sin(x) - 2*cos(x/2) is a trigonometric function.
+
+(2)(a) Using the trigonometric function above, write a function as defined by R in the proper format using function() that accepts values for x and returns a value for y.
+
+```{r test2a, eval = TRUE, echo = TRUE}
+
+R <- function(x){
+  y = sin(x) - 2*cos(x/2)}
+
+```
+
+(2)(b) Create a vector, x, of 4001 equally-spaced values from -2 to 2, inclusive. Compute values for y using the vector x and your function in (a).  **Do not print x or y.**  Find the value in the vector x that corresponds to the minimum value in the vector y. Restrict attention to only the values of x and y you have computed. Round to 3 decimal places and display the value of x you find and the minimum value of y.
+
+Finding the two desired values can be accomplished in as few as two lines of code.  Do not use packages or programs you may find on the internet or elsewhere. Do not print the elements of the vectors x and y. Use coding methods shown in the *Quick Start Guide for R*.
+
+```{r test2b, eval = TRUE, echo = TRUE}
+##first create the vector x, where it is 4001 equally spaced values between -2 to 2, inclusive
+
+x <- c(seq(-2,2,length.out =4001))
+
+##create vector y that contains answers when values from vector x are inserted, find min of y and location of it in vector. create new vector restricted to miny and x
+y <- R(x)
+
+
+##get min y and x associated to min y
+z <- as.data.frame(cbind(x,y))
+
+xymin <- c(round(z$x[which.min(z$y)],3),round(min(z$y),3))
+```
+
+
+(2)(c) Plot y versus x in color, with x on the horizontal axis. Show the location of the minimum value of y determined in 2(b).  Add a title and other features such as text annotations. Text annotations may be added via *text()* and *paste()*.
+
+```{r test2c, eval = TRUE, echo = TRUE}
+
+plot(x,y,type="l",
+     main="Plot of Trigonometric Function",
+     xlab="X Value", 
+     ylab="Y Values",
+     xlim=c(-2,2),
+     ylim=c(-2.5,2))
+
+
+```
+
+-----
+
+##### (3) (8 points) Use the "trees" dataset for the following items. This dataset has three variables (Girth, Height, Volume) on 31 trees.
+
+(3)(a) Use *data(trees)* to load the file.  Check the structure with *str()*. Use *apply()* to return the median values for the three variables in "trees." Print these values.  Using R and logicals, print the row number and the three measurements: Girth, Height and Volume, of the tree with Volume equal to median Volume.
+
+```{r test3a, eval = TRUE, echo = TRUE}
+##load data "trees"
+data(trees)
+
+str(trees)
+##find medians and print row number of each
+rowMedian <- function(x, na.rm = FALSE){
+apply(x, 2, median, na.rm = na.rm)}
+rowMedian(trees)
+
+##Using R and logicals, print the row number and the three measurements: Girth, Height and Volume, of the tree with Volume equal to median 
+
+
+Med_Vol <- trees[trees$Volume == median(trees$Volume),]
+
+```
+
+(3)(b) Girth is defined as the diameter of a tree taken at 4 feet 6 inches from the ground. Convert each diameter to a radius, r. Calculate the cross-sectional area of each tree using pi times the squared radius. Sort Radius ascending and print. Present the stem-and-leaf plot of the radius, and a histogram of the radius in color. Plot Area (y-axis) versus Radius (x-axis)  in color.  Label appropriately.
+
+```{r test3b, eval = TRUE, echo = TRUE}
+
+tree_radius <- trees$Girth / 2
+
+tree_radius <- sort(tree_radius)
+
+print(tree_radius)
+
+tree_area <- (tree_radius^2) * pi
+
+stem(tree_radius)
+hist(tree_radius,
+     col = "red",
+     include.lowest = TRUE, right = TRUE,
+     density = NULL,
+     ylim = c(0,12))
+
+plot(tree_radius,tree_area, main = "plot of Radius to Area of trees",
+    xlab = "Tree Radius",
+    ylab = "tree area",
+     col = "red",
+     col.lab = "blue")
+
+
+
+```
+
+(3)(c) Use *par(mfrow = c(1, 4))* and present vertical colored boxplots of the radii and areas calculated in (b) along with Height and Volume. Label each accordingly.
+
+```{r test3c, eval = TRUE, echo = TRUE}
+
+par(mfrow = c(1, 4))
+boxplot(tree_radius, col = "red")
+boxplot(tree_area, col = "blue")
+boxplot(trees$Height, col = "green")
+boxplot(trees$Volume, col = "purple")
+
+mtext("Comparing boxplots of the radius, area, height, and volume of trees", side = 3,
+      adj = 1, padj = 0)
+
+
+
+
+```
+
+(3)(d) Demonstrate that the outlier revealed in the boxplot of Volume is not an extreme outlier.  It is possible to do this with one line of code using *boxplot.stats* or logicals.
+
+```{r test3d, eval = TRUE, echo = TRUE}
+
+boxplot.stats(trees$Volume, coef = 3, do.conf = FALSE)
+
+
+```
+
+-----
+
+##### (4) (2 points) Use matrix operations shown in the "Quick Start Guide" to solve the following system of linear equations. Display the R script and print the numerical solutions for x, y and z. Use matrix operations with your solution to reproduce the values 1, 1, 1 as a means of checking if your solution is correct.  This last demonstration can be accomplished with matrix multiplication in one line of code. Print your result.  
+
+**x - y + z = 1**
+
+**x + y + z = 1**
+
+**x + y - z = 1**
+
+```{r test4, eval = TRUE, echo = TRUE}
+x <- c( 1,-1,1
+        ,1,1,1
+        ,1,1,-1)
+x <- matrix(x, nrow = 3, byrow = T)
+
+
+y <- c(1,1,1)
+y <- matrix(y, nrow = 3)
+
+solve(x,y)
+
+```
+
+-----
+
+##### (5) (6 points) The Cauchy distribution is an example of a "heavy-tailed" distribution in that it will have (more) outliers in both tails.  This problem involves comparing it with a normal distribution which typically has very few outliers.  
+
+5(a) Use *set.seed(124)* and *rcauchy()* with n = 100, location = 0 and scale = 0.1 to generate a random sample designated as y.  Generate a second random sample designated as x with *set.seed(127)* and *rnorm()* using n = 100, mean = 0 and sd = 0.15.  
+
+Generate a new object using *cbind(x, y)*. Do not print this object.  Use *apply()* with this object to compute the inter-quartile range or IQR for each column:  x and y. Use the function IQR() for this purpose. Round the results to four decimal places and present.  (This exercise shows the similarity of the IQR values.)
+
+For information about rcauchy(), use help in R (?rcauchy).  **Do not print x and y.**
+
+```{r test5a, eval = TRUE, echo = TRUE}
+set.seed(124)
+y <- rcauchy(100,location = 0, scale = 0.1)
+
+set.seed(127)
+x <- rnorm(100,mean = 0, sd = 0.15)
+
+z <- cbind(x,y)
+
+##Use *apply()* with this object to compute the inter-quartile range or IQR for each column:  x and y. Use the function IQR() for this purpose. Round the results to four decimal places and present.
+iqr_z <- round(apply(z,2,FUN = IQR),4)
+
+```
+
+(5)(b) This item will illustrate the difference between a heavy-tailed distribution and one which does not have heavy tails.  Use *par(mfrow = c(2, 2))* to generate a display with four diagrams. On the first row, For the Normal results present a histogram and a horizontal boxplot for x in color.  For the Cauchy results, present a histogram and a horizontal boxplot for y in color.    
+
+```{r test5b, eval = TRUE, echo = TRUE}
+
+
+par(mfrow = c(2, 2))
+hist(x, col = "red")
+boxplot(x, col = "blue", horizontal = TRUE)
+hist(y, col = "green")
+boxplot(y, col = "purple", horizontal = TRUE)
+
+
+
+```
+
+(5)(c) QQ plots are useful for detecting the presence of heavy-tailed distributions. Use *par(mfrow = c(1, 2))* and present side-by-side plots, one for each sample, using *qqnorm()* and *qqline()*.  Add color and titles. Use cex = 0.5 to control the size of the plotted data points.
+
+```{r test5c, eval = TRUE, echo = TRUE}
+par(mfrow = c(1,2))
+
+qqnorm(x, cex = 0.5, main = "Q-Q Plot",
+       xlab = "Theoretical Quantities",
+       ylab = "Sample Quantities",
+       col ="blue")
+
+qqline(y, cex = 0.5, main = "Line Q-Q Plot",
+       xlab = "THeoretical Quatnities",
+       ylab="Sample Quantites",
+       col = "red")
+
+
+
+```
